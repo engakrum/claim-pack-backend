@@ -12,8 +12,8 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-// 🚀 SECURITY UPDATE: ALLOW CLOUD ACCESS
-@CrossOrigin(origins = "*") 
+// 🚀 SECURITY UPDATE: FORCE CLOUD ACCESS NOW
+@CrossOrigin(origins = "*")
 public class BinderController {
 
     @Autowired
