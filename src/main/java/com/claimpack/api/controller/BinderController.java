@@ -12,8 +12,8 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-// 🚀 CRITICAL FIX: This allows your Cloud UI to talk to the Backend
-@CrossOrigin(origins = "*")
+// 🚀 SECURITY UPDATE: ALLOW CLOUD ACCESS
+@CrossOrigin(origins = "*") 
 public class BinderController {
 
     @Autowired
