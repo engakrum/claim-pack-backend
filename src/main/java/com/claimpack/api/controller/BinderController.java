@@ -1,5 +1,6 @@
 package com.claimpack.api.controller;
 
+import com.claimpack.api.service.AiAnalysisService;
 import com.claimpack.api.service.BinderEngineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,28 +12,31 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+// 🚀 CRITICAL FIX: This allows your Cloud UI to talk to the Backend
+@CrossOrigin(origins = "*")
 public class BinderController {
 
     @Autowired
     private BinderEngineService binderService;
 
+    @Autowired
+    private AiAnalysisService aiService;
+
     @PostMapping("/upload")
-    public ResponseEntity<byte[]> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<byte[]> uploadFiles(
+            @RequestParam("files") MultipartFile[] files,
+            @RequestParam(value = "category", defaultValue = "General Dispute") String category,
+            @RequestParam(value = "summary", defaultValue = "") String summary
+    ) {
         try {
-            System.out.println("🤖 Starting PDF generation for " + files.length + " files...");
+            System.out.println("Generating Binder for: " + category);
             
-            // 1. Call the Engine to make the PDF
-            byte[] pdfBytes = binderService.createPdf(files);
-
-            System.out.println("✅ PDF Created! Size: " + pdfBytes.length + " bytes.");
-
-            // 2. Send the PDF back to the browser
+            byte[] pdfBytes = binderService.createPdf(files, category, summary);
+            
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=evidence_binder.pdf")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(pdfBytes);
-
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
